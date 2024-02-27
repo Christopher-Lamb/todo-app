@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { HeadFC, PageProps } from "gatsby";
 import { Todo, PageHeaderControls, TodoContainer } from "../components";
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import { IoIosAdd } from "react-icons/io";
 import initalData from "../misc/initalData.ts";
 import { moveItemDND, generateUID } from "../utils";

@@ -26,7 +26,17 @@ const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, index, onDelete }) => {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      document.execCommand("insertHTML", false, "<p><br></p>");
+      const selection = window.getSelection();
+      if (selection) {
+        const range = selection.getRangeAt(0);
+        const newParagraph = document.createElement("p");
+        newParagraph.appendChild(document.createElement("br"));
+        range.insertNode(newParagraph);
+        range.setStartAfter(newParagraph);
+        range.setEndAfter(newParagraph);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
     }
   };
 
@@ -34,8 +44,8 @@ const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, index, onDelete }) => {
     <Draggable index={index} draggableId={todoItemId}>
       {(provided, snapshot) => (
         <div ref={provided.innerRef} {...provided.draggableProps} className="min-h-small mt-2xsmall w-four bg-blue-500 text-white flex">
-          <div className="w-full p-3xsmall" onBlur={handleChange} onKeyDown={handleKeyDown} contentEditable={true} dangerouslySetInnerHTML={{ __html: content }}></div>
-          <button onClick={() => onDelete(todoItemId)} className="bg-blue-900 flex items-center w-small justify-center">
+          <div aria-label="Text content" className="w-full p-3xsmall" onBlur={handleChange} onKeyDown={handleKeyDown} contentEditable={true} dangerouslySetInnerHTML={{ __html: content }}></div>
+          <button aria-label="Delete" onClick={() => onDelete(todoItemId)} className="bg-blue-900 flex items-center w-small justify-center">
             <MdDelete className="w-xsmall h-xsmall" />
           </button>
           <div {...provided.dragHandleProps} className="bg-blue-900 flex items-center w-small justify-center">

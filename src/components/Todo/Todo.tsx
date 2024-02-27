@@ -34,21 +34,31 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
 
   const handleClick = () => {
     if (!canEdit) {
-      location.href = "/" + todoId;
+      // location.href = "/" + todoId;
     }
+  };
+  const handleChange = (content: string) => {
+    setContent(content);
   };
 
   return (
     <Draggable index={index} draggableId={todoId}>
       {(provided, snapshot) => (
-        <a ref={provided.innerRef} href="#" onClick={handleClick} {...provided.draggableProps} className={"min-h-small w-four flex mt-2xsmall " + (canEdit ? editingStyles : normalStyles)}>
+        <a
+          aria-label="To do"
+          ref={provided.innerRef}
+          // href=""
+          onClick={handleClick}
+          {...provided.draggableProps}
+          className={"min-h-small w-four flex mt-2xsmall " + (canEdit ? editingStyles : normalStyles)}
+        >
           <h3 contentEditable={canEdit} className="w-full text-med p-3xsmall">
             {content}
           </h3>
-          <button className="flex items-center justify-center w-small cursor-pointer" onClick={handleDelete}>
+          <button aria-label="Delete" className="flex items-center justify-center w-small cursor-pointer" onClick={handleDelete}>
             <MdDelete className="w-xsmall h-xsmall" />
           </button>
-          <button className="flex items-center justify-center w-small cursor-pointer" onClick={handleEdit}>
+          <button aria-label="Edit Toggle" className="flex items-center justify-center w-small cursor-pointer" onClick={handleEdit}>
             <MdEdit className="w-xsmall h-xsmall" />
           </button>
           <div {...provided.dragHandleProps} className="w-small flex items-center justify-center">
