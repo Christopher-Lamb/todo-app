@@ -10,7 +10,7 @@ const TodoContainer: React.FC<TodoContainerProps> = ({ children, todoContainerId
   return (
     <Droppable droppableId={todoContainerId}>
       {(provided, snapshot) => (
-        <div {...provided.droppableProps} ref={provided.innerRef} className="grid gap-2xsmall">
+        <div {...provided.droppableProps} ref={provided.innerRef} className="grid">
           {children}
           {provided.placeholder}
         </div>

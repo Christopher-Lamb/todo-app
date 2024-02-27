@@ -1,13 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Draggable } from "react-beautiful-dnd";
+import intialData from "../../misc/initalData";
+import { MdDragHandle, MdDelete } from "react-icons/md";
 
 interface TodoItemProps {
   todoItemId: string;
   index: number;
+  onDelete: (delId: string) => void;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, index }) => {
+const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, index, onDelete }) => {
   const [content, setContent] = useState("");
+
+  useEffect(() => {
+    if (todoItemId in intialData.todoItems) {
+      setContent(intialData.todoItems[todoItemId].content);
+    }
+  }, []);
 
   const handleChange = (event: React.FormEvent<HTMLDivElement>) => {
     setContent(event.currentTarget.innerHTML || "");
@@ -24,10 +33,13 @@ const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, index }) => {
   return (
     <Draggable index={index} draggableId={todoItemId}>
       {(provided, snapshot) => (
-        <div ref={provided.innerRef} {...provided.draggableProps} className="min-h-small w-four bg-blue-500 text-white flex">
+        <div ref={provided.innerRef} {...provided.draggableProps} className="min-h-small mt-2xsmall w-four bg-blue-500 text-white flex">
           <div className="w-full p-3xsmall" onBlur={handleChange} onKeyDown={handleKeyDown} contentEditable={true} dangerouslySetInnerHTML={{ __html: content }}></div>
-          <div {...provided.dragHandleProps} className="bg-blue-900 flex items-center">
-            Handle
+          <button onClick={() => onDelete(todoItemId)} className="bg-blue-900 flex items-center w-small justify-center">
+            <MdDelete className="w-xsmall h-xsmall" />
+          </button>
+          <div {...provided.dragHandleProps} className="bg-blue-900 flex items-center w-small justify-center">
+            <MdDragHandle className="w-xsmall h-xsmall" />
           </div>
         </div>
       )}
