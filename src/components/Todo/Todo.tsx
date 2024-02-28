@@ -34,7 +34,7 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
 
   const handleClick = () => {
     if (!canEdit) {
-      // location.href = "/" + todoId;
+      location.href = "/" + todoId;
     }
   };
   const handleChange = (content: string) => {
