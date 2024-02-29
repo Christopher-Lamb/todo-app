@@ -5,7 +5,7 @@ import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import initalData from "../misc/initalData.ts";
 import { IoIosAdd } from "react-icons/io";
 import { generateUID, moveItemDND } from "../utils/";
-import useIndexedDB from "../hooks/useIndexedDB.tsx";
+import { useIndexedDB } from "../context/IndexedDBContext.tsx";
 
 const TodoListPage: React.FC<PageProps> = () => {
   const todoId = location.pathname.replaceAll("/", "");
@@ -18,10 +18,11 @@ const TodoListPage: React.FC<PageProps> = () => {
   useEffect(() => {
     //TODO: Load the ids from I
     const initTodoItems = async () => {
+      if (!getTodo) return;
       const todo = await getTodo(todoId);
       if (todo) {
         setTodoContent(todo.content);
-        setTodoItems(todo.todoIds);
+        setTodoItems(todo.todoIds ?? []);
       } else {
         setFallback(true);
       }
@@ -30,20 +31,29 @@ const TodoListPage: React.FC<PageProps> = () => {
   }, []);
 
   const handleAddItem = async () => {
+    if (!addTodo) return;
     const newId = await addTodo(todoId);
     setTodoItems((ti) => [...ti, newId]);
   };
 
   const handleDelete = (delId: string) => {
+    if (!deleteTodo) return;
     deleteTodo(delId, todoId);
     setTodoItems((ti) => ti.filter((item) => item !== delId));
   };
 
   const handleDragEnd = (result: DropResult) => {
     const newArr = moveItemDND(todoItems, result);
-    if (newArr) {
+    if (newArr && updateTodoPosition) {
       updateTodoPosition(newArr, todoId);
       setTodoItems(newArr);
+    }
+  };
+
+  const handleSort = (newIds: string[]) => {
+    if (updateTodoPosition) {
+      setTodoItems(newIds);
+      updateTodoPosition(newIds, todoId);
     }
   };
 
@@ -61,7 +71,7 @@ const TodoListPage: React.FC<PageProps> = () => {
         </main>
       ) : (
         <main className="2xl:max-w-four mt-one bg-blue-100 mx-auto grid justify-center">
-          <PageHeaderControls title={todoContent} />
+          <PageHeaderControls title={todoContent} parentId={todoId} onSort={handleSort} />
           <DragDropContext onDragEnd={handleDragEnd}>
             <TodoContainer todoContainerId="index">
               {todoItems && todoItems.map((todoItemId, i) => <TodoItem key={todoItemId} parentId={todoId} todoItemId={todoItemId} index={i} onDelete={handleDelete} />)}

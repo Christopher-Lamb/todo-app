@@ -5,7 +5,7 @@ import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import { IoIosAdd } from "react-icons/io";
 import initalData from "../misc/initalData.ts";
 import { moveItemDND, generateUID } from "../utils";
-import useIndexedDB from "../hooks/useIndexedDB.tsx";
+import { useIndexedDB } from "../context/IndexedDBContext.tsx";
 
 const IndexPage: React.FC<PageProps> = () => {
   const [mainIds, setMainIds] = useState<string[]>([]);
@@ -13,37 +13,46 @@ const IndexPage: React.FC<PageProps> = () => {
 
   useEffect(() => {
     const initTodos = async () => {
-      // setMainIds(initalData.mainIds);
+      if (!getTodo) return;
       const mainIds = await getTodo("mainIds");
-      setMainIds(mainIds.todoIds);
+      if (mainIds) {
+        console.log("BANG", mainIds);
+        setMainIds(mainIds.todoIds ?? []);
+      }
     };
-
     initTodos();
-    //TODO: Get mainIds from indexedDB
-    //Track updates with state and update to indexedDB accordingly
   }, []);
 
   const handleDragEnd = (result: DropResult) => {
     const newArr = moveItemDND(mainIds, result);
-    if (newArr) {
+    if (newArr && updateTodoPosition) {
       setMainIds(newArr);
       updateTodoPosition(newArr, "mainIds");
     }
   };
 
   const handleAdd = async () => {
+    if (!addTodo) return;
     const newId = await addTodo("mainIds");
     setMainIds((mIds) => [...mIds, newId]);
   };
 
   const handleDelete = (delId: string) => {
+    if (!deleteTodo) return;
     deleteTodo(delId, "mainIds");
     setMainIds((mIds) => mIds.filter((item) => item !== delId));
   };
 
+  const handleSort = (newIds: string[]) => {
+    if (updateTodoPosition) {
+      setMainIds(newIds);
+      updateTodoPosition(newIds, "mainIds");
+    }
+  };
+
   return (
-    <main className="2xl:max-w-four mt-one bg-blue-100 mx-auto grid justify-center">
-      <PageHeaderControls title="Todo's" />
+    <main className="2xl:max-w-four mt-one mx-auto grid justify-center">
+      <PageHeaderControls title="Todo's" parentId="mainIds" onSort={handleSort} />
       <DragDropContext onDragEnd={handleDragEnd}>
         <TodoContainer todoContainerId="index">
           {mainIds.map((todo, i) => (
@@ -51,8 +60,8 @@ const IndexPage: React.FC<PageProps> = () => {
           ))}
         </TodoContainer>
       </DragDropContext>
-      <div className="w-four mt-2xsmall outline outline-gray-600 bg-gray-200 flex items-center justify-center h-small cursor-pointer" onClick={handleAdd}>
-        <IoIosAdd className="w-small h-small text-gray-600" />
+      <div title="Add Todo" className="w-four mt-2xsmall outline outline-gray-300 rounded bg-gray-200 flex items-center justify-center h-small cursor-pointer opacity-60 hover:opacity-100" onClick={handleAdd}>
+        <IoIosAdd className="w-small h-small text-gray-500" />
       </div>
     </main>
   );

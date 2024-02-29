@@ -1,37 +1,83 @@
+import React, { useContext, createContext, useState } from "react";
 import { useEffect } from "react";
 import { openDB } from "idb";
-import intialStoreData from "../misc/intialStoreData";
+import initialStoreData from "../misc/intialStoreData";
 import { generateUID } from "../utils";
+import { PageProps } from "gatsby";
 
-const useIndexedDB = () => {
+interface TodoItem {
+  id: string;
+  content: string;
+  date_created: number;
+  date_updated: number;
+  todoIds?: string[];
+}
+
+interface IndexedDBContextType {
+  addTodo: (parentId: string) => Promise<string>;
+  updateTodo: (data: { id: string; content: string }, parentId: string) => void;
+  deleteTodo: (id: string, parentId: string) => void;
+  getTodo: (id: string) => Promise<TodoItem>;
+  getChildrenTodos: (parentId: string) => Promise<TodoItem[]>;
+  updateTodoPosition: (array: string[], parentId: string) => void;
+  updates: number;
+}
+
+const defaultContextValue: Partial<IndexedDBContextType> = {
+  // Default values or dummy functions; could also be undefined
+  addTodo: undefined,
+  updateTodo: undefined,
+  deleteTodo: undefined,
+  getTodo: undefined,
+  getChildrenTodos: undefined,
+  updateTodoPosition: undefined,
+  updates: undefined,
+};
+
+const IndexedDBContext = createContext<Partial<IndexedDBContextType>>(defaultContextValue);
+
+export const IndexedDBProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [updates, setUpdates] = useState(0);
+
   const dbName = "TodoDB";
   const storeName = "TodoStore";
   const version = 1; // Increment this when changing the database schema
 
-  // Initialize the database
-  useEffect(() => {
-    const initDB = async () => {
-      const db = await openDB(dbName, version, {
-        upgrade(db, oldVersion, newVersion, transaction) {
-          // Create object store if it doesn't exist
-          let store: any;
-          if (!db.objectStoreNames.contains(storeName)) {
-            store = db.createObjectStore(storeName, { keyPath: "id" });
-            intialStoreData.forEach((obj) => {
-              store.add(obj);
-            });
-          } else {
-            store = transaction.objectStore(storeName);
-          }
-        },
-      });
-    };
+  const incrementUpdates = () => {
+    setUpdates((num) => num + 1);
+  };
 
+  // Initialize the database
+  const initDB = async () => {
+    const db = await openDB(dbName, version, {
+      upgrade(db) {
+        console.log("Upgrade function is running");
+        if (!db.objectStoreNames.contains(storeName)) {
+          const store = db.createObjectStore(storeName, { keyPath: "id" });
+          // Note: Do not attempt to add data here
+        }
+      },
+    });
+
+    // After the upgrade, check if initial data needs to be added
+    const tx = await db.transaction(storeName, "readwrite");
+    const store = await tx.objectStore(storeName);
+    const count = await store.count();
+    if (count === 0) {
+      await initialStoreData.forEach((obj) => {
+        store.add(obj);
+      });
+      await tx.done; // Ensure the transaction completes
+    }
+  };
+
+  useEffect(() => {
     initDB();
   }, []);
 
   // Get data from the database
   const getTodo = async (id: string) => {
+    await initDB();
     const db = await openDB(dbName, version);
     const tx = db.transaction(storeName, "readonly");
     const store = tx.objectStore(storeName);
@@ -49,7 +95,7 @@ const useIndexedDB = () => {
     //Register the store
     const store = tx.objectStore(storeName);
     // Add new Todo to the store
-    await store.add({ id: newId, content: "", todoIds: [] });
+    await store.add({ id: newId, content: "", todoIds: [], date_updated: Date.now(), date_created: Date.now() });
 
     //Get mainIds from the store
     const parentTodo = await store.get(parentId);
@@ -60,6 +106,7 @@ const useIndexedDB = () => {
     //Update mainIds to add new todo Id
     await store.put({ ...parentTodo, id: parentId, todoIds: [...parentTodo.todoIds, newId], date_updated: Date.now() });
 
+    incrementUpdates();
     //Finish transaction
     await tx.done;
     return newId;
@@ -87,6 +134,7 @@ const useIndexedDB = () => {
     // Merge the existing object with the new data
     const updatedTodo = { ...existingTodo, ...data, date_updated: Date.now() };
 
+    incrementUpdates();
     // Put the merged objects back into the store
     await store.put(updatedParent);
     await store.put(updatedTodo);
@@ -124,6 +172,7 @@ const useIndexedDB = () => {
     // console.log(parentTodo);
     const filteredArr = [...parentTodo.todoIds].filter((item: string) => id !== item);
 
+    incrementUpdates();
     // Update parent with new array
     await store.put({ ...parentTodo, todoIds: filteredArr });
     await store.delete(id);
@@ -131,6 +180,7 @@ const useIndexedDB = () => {
   };
 
   const getChildrenTodos = async (parentId: string): Promise<any[]> => {
+    await initDB();
     // Open the database
     const db = await openDB(dbName, version);
     const tx = db.transaction(storeName, "readonly");
@@ -139,7 +189,9 @@ const useIndexedDB = () => {
     const parentTodo = await store.get(parentId);
     //Get Parent array
     if (!parentTodo) {
-      throw new Error("Todo not found ==> " + parentId);
+      // throw new Error("Todo not found ==> " + parentId);
+      await tx.done;
+      return [];
     }
     // Use Promise.all to fetch all records in parallel
     const records = await Promise.all(parentTodo.todoIds.map((id: string) => store.get(id)));
@@ -147,8 +199,7 @@ const useIndexedDB = () => {
     await tx.done;
     return records; // This will be an array of found records
   };
-
-  return { addTodo, updateTodo, deleteTodo, getTodo, getChildrenTodos, updateTodoPosition };
+  return <IndexedDBContext.Provider value={{ addTodo, updateTodo, deleteTodo, getTodo, getChildrenTodos, updateTodoPosition, updates }}>{children}</IndexedDBContext.Provider>;
 };
 
-export default useIndexedDB;
+export const useIndexedDB = () => useContext(IndexedDBContext);

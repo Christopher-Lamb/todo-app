@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import intialData from "../../misc/initalData";
 import { MdDragHandle, MdDelete } from "react-icons/md";
-import useIndexedDB from "../../hooks/useIndexedDB";
+import { useIndexedDB } from "../../context/IndexedDBContext";
 
 interface TodoItemProps {
   todoItemId: string;
@@ -17,15 +17,19 @@ const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, parentId, index, onDele
 
   useEffect(() => {
     const initTodoItem = async () => {
-      const todoItem = await getTodo(todoItemId);
-      setContent(todoItem.content);
+      if (getTodo) {
+        const todoItem = await getTodo(todoItemId);
+        setContent(todoItem.content);
+      }
     };
     initTodoItem();
   }, []);
 
   const handleChange = (event: ChangeEvent<HTMLDivElement>) => {
     const value = event.target.innerHTML || "";
-    updateTodo({ id: todoItemId, content: value }, parentId);
+    if (updateTodo) {
+      updateTodo({ id: todoItemId, content: value }, parentId);
+    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {

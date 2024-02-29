@@ -1,89 +1,138 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DarkModeToggle from "./Toggles/DarkModeToggle";
 import DeleteToggle from "./Toggles/DeleteToggle";
-import { FaRedo, FaUndo, FaSearch } from "react-icons/fa";
+import { FaRedo, FaUndo } from "react-icons/fa";
+import { useIndexedDB } from "../../context/IndexedDBContext";
+import { sortTodosAZ, sortTodosZA, sortTodosByLastCreated, sortTodosByLastUpdated, sortTodosByOldestCreated, sortTodosByOldestUpdated } from "./sortFunctions";
 
 interface PageHeaderControlsProps {
   title: string;
+  parentId: string;
+  onSort: (ids: string[]) => void;
 }
 
-const PageHeaderControls: React.FC<PageHeaderControlsProps> = ({ title = "title" }) => {
+interface TodoItem {
+  id: string;
+  content: string;
+  date_created: number;
+  date_updated: number;
+  todoIds?: string[];
+}
+
+// TODO: Dark Mode and Delete Mode switches will be controlled in SettingsContext so we will import a useSettingContext at some point
+// accepts a list of object return a filtered list
+
+const PageHeaderControls: React.FC<PageHeaderControlsProps> = ({ title = "title", parentId, onSort }) => {
+  const [childTodos, setChildTodos] = useState<TodoItem[] | undefined>();
+  const { getChildrenTodos, updates } = useIndexedDB();
+
+  const initChildren = async () => {
+    if (getChildrenTodos) {
+      const childrenTodos = await getChildrenTodos(parentId);
+      if (childrenTodos) setChildTodos(childrenTodos);
+    }
+  };
+  useEffect(() => {
+    initChildren();
+  }, []);
+
+  useEffect(() => {
+    initChildren();
+  }, [updates]);
+
+  const handleSortSelect = (filterFunc: (todos: TodoItem[]) => string[]) => {
+    if (childTodos) {
+      const newChildIds = filterFunc(childTodos);
+      onSort(newChildIds);
+    }
+  };
+
   return (
-    <div className="grid grid-cols-3">
-      <div className="flex flex-col justify-between">
-        <a href="/">Back</a>
-        <h1 className="text-large archivo">{title}</h1>
-      </div>
-      <div className="grid grid-row-3 col-span-2">
-        <div className="flex justify-end">
-          <DeleteToggle />
-          <DarkModeToggle />
+    <div className="max-w-four">
+      <div className="grid grid-cols-6">
+        <div className="flex flex-col justify-between">
+          <a href="/">Back</a>
         </div>
-        <UndoRedo />
-        <div className="flex">
-          <SearchBar />
-          <FilterBox />
+        <div className="flex flex-col col-span-5 gap-2xsmall">
+          <div className="flex justify-end gap-2xsmall">
+            <DeleteToggle />
+            <DarkModeToggle />
+          </div>
+          <div className="flex justify-end gap-2xsmall">
+            <SortBox onSortSelect={handleSortSelect} />
+            <UndoRedo />
+          </div>
         </div>
       </div>
+      <h1 className="text-large archivo" dangerouslySetInnerHTML={{ __html: title }}></h1>
     </div>
   );
 };
 
-const Wrapper: React.FC<{ children: React.ReactNode; width?: string }> = ({ children, width = "100%" }) => {
-  return (
-    <div className="h-small " style={{ width }}>
-      {children}
-    </div>
-  );
-};
+interface SortBoxProps {
+  onSortSelect: (filterFunction: (todos: TodoItem[]) => string[]) => void;
+}
 
-const SearchBar: React.FC = () => {
-  return (
-    <Wrapper>
-      <div className="flex items-center justify-end">
-        <div className="flex gap-2 items-center px-2 py-1 mr-2xsmall h-small bg-white">
-          <FaSearch className="" />
-          <input className="h-small px-2" />
-        </div>
-      </div>
-    </Wrapper>
-  );
-};
-
-const FilterBox: React.FC = () => {
-  const [selectedValue, setSelectedValue] = useState<string>("");
+const SortBox: React.FC<SortBoxProps> = ({ onSortSelect }) => {
+  // const [selectedValue, setSelectedValue] = useState<string>("");
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedValue(event.target.value);
+    const value = event.target.value;
+
+    // setSelectedValue(event.target.value);
+    switch (value) {
+      case "last-created":
+        onSortSelect(sortTodosByLastCreated);
+        break;
+      case "oldest-created":
+        onSortSelect(sortTodosByOldestCreated);
+        break;
+      case "last-updated":
+        onSortSelect(sortTodosByLastUpdated);
+        break;
+      case "oldest-updated":
+        onSortSelect(sortTodosByOldestUpdated);
+        break;
+      case "a-z":
+        onSortSelect(sortTodosAZ);
+        break;
+      case "z-a":
+        onSortSelect(sortTodosZA);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handelClick = (event: React.MouseEvent<HTMLSelectElement>) => {
+    event.currentTarget.value = "";
   };
   return (
-    <Wrapper width="50%">
-      <div className="flex items-center justify-end h-small">
-        <select value={selectedValue} onChange={handleChange} className="h-small px-2">
-          <option value="">Filter</option>
-          <option value="last-updated">Last Updated</option>
-          <option value="last-created">Last Created</option>
-          <option value="aToZ">A - Z</option>
-        </select>
-      </div>
-    </Wrapper>
+    <div className="flex items-center justify-end h-small">
+      <select onClick={handelClick} onChange={handleChange} className="h-small px-2">
+        <option value="">No Sort</option>
+        <option value="last-created">New - Old</option>
+        <option value="oldest-created">Old - New</option>
+        {/* <option value="last-updated">Last Updated</option>
+          <option value="oldest-updated">Old Updated</option> */}
+        <option value="a-z">A - Z</option>
+        <option value="z-a">Z - A</option>
+      </select>
+    </div>
   );
 };
 
 const UndoRedo: React.FC = () => {
   return (
-    <Wrapper>
-      <div className="flex justify-end h-small items-center  gap-3xsmall mr-3xsmall">
-        <button title="undo" onClick={() => {}}>
-          <FaUndo />
-        </button>
-        <button title="redo" onClick={() => {}}>
-          <FaRedo />
-        </button>
-      </div>
-    </Wrapper>
+    <div className="flex justify-end h-small items-center  gap-3xsmall mr-3xsmall">
+      <button title="undo" onClick={() => {}}>
+        <FaUndo />
+      </button>
+      <button title="redo" onClick={() => {}}>
+        <FaRedo />
+      </button>
+    </div>
   );
 };
 
 export default PageHeaderControls;
-export { Wrapper };

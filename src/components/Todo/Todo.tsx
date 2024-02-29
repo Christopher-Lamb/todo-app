@@ -2,7 +2,7 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import intialData from "../../misc/initalData";
 import { MdDragHandle, MdEdit, MdDelete } from "react-icons/md";
-import useIndexedDB from "../../hooks/useIndexedDB";
+import { useIndexedDB } from "../../context/IndexedDBContext";
 
 interface TodoProps {
   todoId: string;
@@ -21,6 +21,7 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
   useEffect(() => {
     //Initalize todo form IndexedDB and set content to the UI
     const initTodo = async () => {
+      if (!getTodo) return;
       const todo = await getTodo(todoId);
       setContent(todo.content);
     };
@@ -44,8 +45,7 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
   };
   const handleChange = (event: ChangeEvent<HTMLHeadingElement>) => {
     const value = event.target.innerHTML;
-    // setContent(value);
-    console.log(value);
+    if (!updateTodo) return;
     updateTodo({ id: todoId, content: value }, "mainIds");
   };
 
