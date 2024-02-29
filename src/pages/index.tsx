@@ -5,12 +5,20 @@ import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import { IoIosAdd } from "react-icons/io";
 import initalData from "../misc/initalData.ts";
 import { moveItemDND, generateUID } from "../utils";
+import useIndexedDB from "../hooks/useIndexedDB.tsx";
 
 const IndexPage: React.FC<PageProps> = () => {
   const [mainIds, setMainIds] = useState<string[]>([]);
+  const { getChildrenTodos, getTodo, addTodo, deleteTodo, updateTodoPosition } = useIndexedDB();
 
   useEffect(() => {
-    setMainIds(initalData.mainIds);
+    const initTodos = async () => {
+      // setMainIds(initalData.mainIds);
+      const mainIds = await getTodo("mainIds");
+      setMainIds(mainIds.todoIds);
+    };
+
+    initTodos();
     //TODO: Get mainIds from indexedDB
     //Track updates with state and update to indexedDB accordingly
   }, []);
@@ -19,14 +27,17 @@ const IndexPage: React.FC<PageProps> = () => {
     const newArr = moveItemDND(mainIds, result);
     if (newArr) {
       setMainIds(newArr);
+      updateTodoPosition(newArr, "mainIds");
     }
   };
 
-  const handleAdd = () => {
-    setMainIds((mIds) => [...mIds, generateUID()]);
+  const handleAdd = async () => {
+    const newId = await addTodo("mainIds");
+    setMainIds((mIds) => [...mIds, newId]);
   };
 
   const handleDelete = (delId: string) => {
+    deleteTodo(delId, "mainIds");
     setMainIds((mIds) => mIds.filter((item) => item !== delId));
   };
 

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import intialData from "../../misc/initalData";
 import { MdDragHandle, MdEdit, MdDelete } from "react-icons/md";
+import useIndexedDB from "../../hooks/useIndexedDB";
 
 interface TodoProps {
   todoId: string;
@@ -15,11 +16,15 @@ const normalStyles = "text-white bg-blue-500";
 const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
   const [content, setContent] = useState("");
   const [canEdit, setCanEdit] = useState(false);
+  const { getTodo, updateTodo } = useIndexedDB();
 
   useEffect(() => {
-    if (todoId in intialData.todos) {
-      setContent(intialData.todos[todoId].content);
-    }
+    //Initalize todo form IndexedDB and set content to the UI
+    const initTodo = async () => {
+      const todo = await getTodo(todoId);
+      setContent(todo.content);
+    };
+    initTodo();
   }, []);
 
   const handleEdit = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -37,8 +42,11 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
       location.href = "/" + todoId;
     }
   };
-  const handleChange = (content: string) => {
-    setContent(content);
+  const handleChange = (event: ChangeEvent<HTMLHeadingElement>) => {
+    const value = event.target.innerHTML;
+    // setContent(value);
+    console.log(value);
+    updateTodo({ id: todoId, content: value }, "mainIds");
   };
 
   return (
@@ -52,9 +60,7 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
           {...provided.draggableProps}
           className={"min-h-small w-four flex mt-2xsmall " + (canEdit ? editingStyles : normalStyles)}
         >
-          <h3 contentEditable={canEdit} className="w-full text-med p-3xsmall">
-            {content}
-          </h3>
+          <h3 contentEditable={canEdit} onInput={handleChange} className="w-full text-med p-3xsmall" dangerouslySetInnerHTML={{ __html: content }}></h3>
           <button aria-label="Delete" className="flex items-center justify-center w-small cursor-pointer" onClick={handleDelete}>
             <MdDelete className="w-xsmall h-xsmall" />
           </button>

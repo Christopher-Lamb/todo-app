@@ -5,33 +5,44 @@ import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import initalData from "../misc/initalData.ts";
 import { IoIosAdd } from "react-icons/io";
 import { generateUID, moveItemDND } from "../utils/";
+import useIndexedDB from "../hooks/useIndexedDB.tsx";
 
 const TodoListPage: React.FC<PageProps> = () => {
   const todoId = location.pathname.replaceAll("/", "");
-  const todoContent = initalData.todos[todoId] ? initalData.todos[todoId].content : "Error";
+  // const todoContent = initalData.todos[todoId] ? initalData.todos[todoId].content : "Error";
   const [todoItems, setTodoItems] = useState<string[]>([]);
+  const [todoContent, setTodoContent] = useState("");
   const [fallback, setFallback] = useState(false);
+  const { getTodo, addTodo, deleteTodo, updateTodoPosition } = useIndexedDB();
 
   useEffect(() => {
     //TODO: Load the ids from I
-    if (todoId in initalData.todos) {
-      setTodoItems(initalData.todos[todoId].todoItemIds);
-    } else {
-      setFallback(true);
-    }
+    const initTodoItems = async () => {
+      const todo = await getTodo(todoId);
+      if (todo) {
+        setTodoContent(todo.content);
+        setTodoItems(todo.todoIds);
+      } else {
+        setFallback(true);
+      }
+    };
+    initTodoItems();
   }, []);
 
-  const handleAddItem = () => {
-    setTodoItems((ti) => [...ti, generateUID()]);
+  const handleAddItem = async () => {
+    const newId = await addTodo(todoId);
+    setTodoItems((ti) => [...ti, newId]);
   };
 
   const handleDelete = (delId: string) => {
+    deleteTodo(delId, todoId);
     setTodoItems((ti) => ti.filter((item) => item !== delId));
   };
 
   const handleDragEnd = (result: DropResult) => {
     const newArr = moveItemDND(todoItems, result);
     if (newArr) {
+      updateTodoPosition(newArr, todoId);
       setTodoItems(newArr);
     }
   };
@@ -53,7 +64,7 @@ const TodoListPage: React.FC<PageProps> = () => {
           <PageHeaderControls title={todoContent} />
           <DragDropContext onDragEnd={handleDragEnd}>
             <TodoContainer todoContainerId="index">
-              {todoItems && todoItems.map((todoItemId, i) => <TodoItem key={todoItemId} todoItemId={todoItemId} index={i} onDelete={handleDelete} />)}
+              {todoItems && todoItems.map((todoItemId, i) => <TodoItem key={todoItemId} parentId={todoId} todoItemId={todoItemId} index={i} onDelete={handleDelete} />)}
             </TodoContainer>
           </DragDropContext>
           <div className="w-four mt-2xsmall outline outline-gray-600 bg-gray-200 flex items-center justify-center h-small cursor-pointer" onClick={handleAddItem}>
