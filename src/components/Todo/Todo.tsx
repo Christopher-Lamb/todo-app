@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useRef, MouseEvent } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import intialData from "../../misc/initalData";
 import { MdDragHandle, MdEdit, MdDelete } from "react-icons/md";
@@ -17,6 +17,7 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
   const [content, setContent] = useState("");
   const [canEdit, setCanEdit] = useState(false);
   const { getTodo, updateTodo } = useIndexedDB();
+  const contentEditableRef = useRef();
 
   useEffect(() => {
     //Initalize todo form IndexedDB and set content to the UI
@@ -28,12 +29,12 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
     initTodo();
   }, []);
 
-  const handleEdit = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleEdit = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setCanEdit((ce) => !ce);
   };
 
-  const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     onDelete(todoId);
   };
@@ -49,6 +50,34 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
     updateTodo({ id: todoId, content: value }, "mainIds");
   };
 
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  //   if (event.key === "Enter") {
+  //     event.preventDefault();
+  //   }
+  // };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    console.log("Hello");
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const selection = window.getSelection();
+      console.log(selection);
+      if (selection) {
+        const range = selection.getRangeAt(0);
+        const newDiv = document.createElement("span");
+        newDiv.style.fontSize = "1.125rem";
+        newDiv.style.fontWeight = "100";
+        newDiv.style.display = "block";
+        // newDiv.appendChild(document.createElement("br"));
+        range.insertNode(newDiv);
+        range.setStartAfter(newDiv);
+        range.setEndAfter(newDiv);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  };
+
   return (
     <Draggable index={index} draggableId={todoId}>
       {(provided, snapshot) => (
@@ -60,7 +89,7 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
           {...provided.draggableProps}
           className={"min-h-small w-four flex mt-2xsmall " + (canEdit ? editingStyles : normalStyles)}
         >
-          <h3 contentEditable={canEdit} onInput={handleChange} className="w-full text-med p-3xsmall" dangerouslySetInnerHTML={{ __html: content }}></h3>
+          <div contentEditable={canEdit} onKeyDown={handleKeyDown} onInput={handleChange} className="w-full text-med p-3xsmall" dangerouslySetInnerHTML={{ __html: content }}></div>
           <button aria-label="Delete" className="flex items-center justify-center w-small cursor-pointer" onClick={handleDelete}>
             <MdDelete className="w-xsmall h-xsmall" />
           </button>

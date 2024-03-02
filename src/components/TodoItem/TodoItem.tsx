@@ -52,7 +52,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, parentId, index, onDele
   return (
     <Draggable index={index} draggableId={todoItemId}>
       {(provided, snapshot) => (
-        <div ref={provided.innerRef} {...provided.draggableProps} className="min-h-small mt-2xsmall w-four bg-blue-500 text-white flex">
+        <div ref={provided.innerRef} {...provided.draggableProps} className="min-h-small mt-2xsmall max-w-four bg-blue-500 text-white flex">
           <div aria-label="Text content" className="w-full p-3xsmall" onInput={handleChange} onKeyDown={handleKeyDown} contentEditable={true} dangerouslySetInnerHTML={{ __html: content }}></div>
           <button aria-label="Delete" onClick={() => onDelete(todoItemId)} className="bg-blue-900 flex items-center w-small justify-center">
             <MdDelete className="w-xsmall h-xsmall" />
