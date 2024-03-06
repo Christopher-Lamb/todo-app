@@ -4,6 +4,7 @@ import DeleteToggle from "./Toggles/DeleteToggle";
 import { FaRedo, FaUndo } from "react-icons/fa";
 import { useIndexedDB } from "../../context/IndexedDBContext";
 import { sortTodosAZ, sortTodosZA, sortTodosByLastCreated, sortTodosByLastUpdated, sortTodosByOldestCreated, sortTodosByOldestUpdated } from "./sortFunctions";
+import "./PageHeaderControls.css"
 
 interface PageHeaderControlsProps {
   title: string;
@@ -64,7 +65,7 @@ const PageHeaderControls: React.FC<PageHeaderControlsProps> = ({ title = "title"
           </div>
         </div>
       </div>
-      <h1 className="text-large archivo" dangerouslySetInnerHTML={{ __html: title }}></h1>
+      <div className="page-control-text-container archivo" dangerouslySetInnerHTML={{ __html: title }}></div>
     </div>
   );
 };

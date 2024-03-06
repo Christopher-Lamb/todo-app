@@ -3,6 +3,8 @@ import { Draggable } from "react-beautiful-dnd";
 import intialData from "../../misc/initalData";
 import { MdDragHandle, MdEdit, MdDelete } from "react-icons/md";
 import { useIndexedDB } from "../../context/IndexedDBContext";
+import { DynamicText } from "..";
+import "./Todo.css";
 
 interface TodoProps {
   todoId: string;
@@ -17,7 +19,6 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
   const [content, setContent] = useState("");
   const [canEdit, setCanEdit] = useState(false);
   const { getTodo, updateTodo } = useIndexedDB();
-  const contentEditableRef = useRef();
 
   useEffect(() => {
     //Initalize todo form IndexedDB and set content to the UI
@@ -25,6 +26,7 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
       if (!getTodo) return;
       const todo = await getTodo(todoId);
       setContent(todo.content);
+      if (todo.content === "") setCanEdit(true);
     };
     initTodo();
   }, []);
@@ -44,10 +46,9 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
       location.href = "/" + todoId;
     }
   };
-  const handleChange = (event: ChangeEvent<HTMLHeadingElement>) => {
-    const value = event.target.innerHTML;
+  const handleChange = (html: string) => {
     if (!updateTodo) return;
-    updateTodo({ id: todoId, content: value }, "mainIds");
+    updateTodo({ id: todoId, content: html }, "mainIds");
   };
 
   // const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -89,7 +90,8 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
           {...provided.draggableProps}
           className={"min-h-small w-four flex mt-2xsmall " + (canEdit ? editingStyles : normalStyles)}
         >
-          <div contentEditable={canEdit} onKeyDown={handleKeyDown} onInput={handleChange} className="w-full text-med p-3xsmall" dangerouslySetInnerHTML={{ __html: content }}></div>
+          <DynamicText primaryElement="h3" isEditable={canEdit} onChange={handleChange} className="w-full todo-text-container p-3xsmall" content={content}></DynamicText>
+          {/* <div contentEditable={canEdit} onKeyDown={handleKeyDown} onInput={handleChange} className="w-full text-med p-3xsmall" dangerouslySetInnerHTML={{ __html: content }}></div> */}
           <button aria-label="Delete" className="flex items-center justify-center w-small cursor-pointer" onClick={handleDelete}>
             <MdDelete className="w-xsmall h-xsmall" />
           </button>

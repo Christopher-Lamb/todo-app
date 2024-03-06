@@ -3,6 +3,7 @@ import { Draggable } from "react-beautiful-dnd";
 import intialData from "../../misc/initalData";
 import { MdDragHandle, MdDelete } from "react-icons/md";
 import { useIndexedDB } from "../../context/IndexedDBContext";
+import { DynamicText } from "..";
 
 interface TodoItemProps {
   todoItemId: string;
@@ -25,27 +26,9 @@ const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, parentId, index, onDele
     initTodoItem();
   }, []);
 
-  const handleChange = (event: ChangeEvent<HTMLDivElement>) => {
-    const value = event.target.innerHTML || "";
+  const handleChange = (html: string) => {
     if (updateTodo) {
-      updateTodo({ id: todoItemId, content: value }, parentId);
-    }
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      const selection = window.getSelection();
-      if (selection) {
-        const range = selection.getRangeAt(0);
-        const newParagraph = document.createElement("p");
-        newParagraph.appendChild(document.createElement("br"));
-        range.insertNode(newParagraph);
-        range.setStartAfter(newParagraph);
-        range.setEndAfter(newParagraph);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
+      updateTodo({ id: todoItemId, content: html }, parentId);
     }
   };
 
@@ -53,7 +36,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, parentId, index, onDele
     <Draggable index={index} draggableId={todoItemId}>
       {(provided, snapshot) => (
         <div ref={provided.innerRef} {...provided.draggableProps} className="min-h-small mt-2xsmall max-w-four bg-blue-500 text-white flex">
-          <div aria-label="Text content" className="w-full p-3xsmall" onInput={handleChange} onKeyDown={handleKeyDown} contentEditable={true} dangerouslySetInnerHTML={{ __html: content }}></div>
+          <DynamicText secondaryElement="p" className="w-full p-3xsmall" onChange={handleChange} isEditable={true} content={content}></DynamicText>
           <button aria-label="Delete" onClick={() => onDelete(todoItemId)} className="bg-blue-900 flex items-center w-small justify-center">
             <MdDelete className="w-xsmall h-xsmall" />
           </button>

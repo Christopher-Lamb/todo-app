@@ -70,7 +70,7 @@ const TodoListPage: React.FC<PageProps> = () => {
           </div>
         </main>
       ) : (
-        <main className="2xl:max-w-four mt-one bg-blue-100 mx-auto grid justify-center">
+        <main className="2xl:max-w-four mt-one mx-auto grid justify-center">
           <PageHeaderControls title={todoContent} parentId={todoId} onSort={handleSort} />
           <DragDropContext onDragEnd={handleDragEnd}>
             <TodoContainer todoContainerId="index">

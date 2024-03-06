@@ -1,0 +1,9 @@
+.todo-text-container h3 {
+  font-size: 1.6175rem;
+  line-height: 2.0704rem;
+}
+
+.todo-text-container span {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+}

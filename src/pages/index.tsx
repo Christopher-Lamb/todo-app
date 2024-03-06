@@ -52,7 +52,7 @@ const IndexPage: React.FC<PageProps> = () => {
 
   return (
     <main className="2xl:max-w-four mt-one mx-auto grid justify-center">
-      <PageHeaderControls title="Todo's" parentId="mainIds" onSort={handleSort} />
+      <PageHeaderControls title="<h3>Todo's</h3>" parentId="mainIds" onSort={handleSort} />
       <DragDropContext onDragEnd={handleDragEnd}>
         <TodoContainer todoContainerId="index">
           {mainIds.map((todo, i) => (

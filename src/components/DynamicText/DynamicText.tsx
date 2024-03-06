@@ -7,16 +7,16 @@ interface DynamicTextProps {
   secondaryElement?: string;
   className?: string;
   isEditable?: boolean;
+  content?: string | TrustedHTML;
   onChange: (html: string) => void;
 }
 
-const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", secondaryElement = "span", className, isEditable = true, onChange }) => {
-  const [content, setContent] = useState("");
+const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", secondaryElement = "span", className, isEditable = true, onChange, content = "" }) => {
   const contentEditableRef = useRef<HTMLDivElement>(null);
   const handleChange = (event: React.ChangeEvent<HTMLDivElement>) => {
     handleEmptyDiv();
+    formatSpan();
     const innerHTML = contentEditableRef.current?.innerHTML;
-    console.log(innerHTML);
     innerHTML && onChange(innerHTML);
   };
 
@@ -24,6 +24,10 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
     formatElements();
     handleEmptyDiv();
   }, []);
+
+  useEffect(() => {
+    contentEditableRef.current?.focus();
+  }, [isEditable]);
 
   const handleEmptyDiv = () => {
     const parentNode = contentEditableRef.current;
@@ -106,7 +110,7 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
     }
   };
 
-  return <div className="p-4" ref={contentEditableRef} contentEditable={isEditable} onKeyUp={handleKeyDown} onInput={handleChange} dangerouslySetInnerHTML={{ __html: content }}></div>;
+  return <div className={className} ref={contentEditableRef} contentEditable={isEditable} onKeyUp={handleKeyDown} onInput={handleChange} dangerouslySetInnerHTML={{ __html: content }}></div>;
 };
 
 export default DynamicText;
