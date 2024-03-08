@@ -1,0 +1,223 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+  --background: #f2f5f8;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #283241;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: hsl(199, 46%, 94%);
+  /* --box-bg-color: rgb(59 130 246); */
+  --box-color: #395a7f;
+  --box-outline: 2px solid #395A7F;
+  --edit-bg-color: #dae2ed;
+  --edit-color: #283241;
+  --edit-outline: 3px solid #283241;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid #283241;
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 0;
+}
+
+[data-theme="default-dark"] {
+  --background: #283241;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #F66C54;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: #395A7F;
+  /* --box-bg-color: rgb(59 130 246); */
+  --box-color: #cddeec;
+  --box-outline: 1px solid #baccdcb0;
+  --edit-bg-color: #283241;
+  --edit-color: #cddeec;
+  --edit-outline: 2px solid #cddeec7c;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid #F66C54;
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 0;
+}
+
+[data-theme="cherry-blossom"] {
+  --background: #ffd6ed;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #541f1f;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: #feecf6;
+  --box-outline: 2px solid #541f1f;
+  --box-color: #541f1f;
+  --edit-bg-color: #e8ccbc;
+  --edit-color: #541f1f;
+  --edit-outline: 4px solid #541f1f;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid #541f1f;
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 0;
+}
+[data-theme="cherry-blossom-dark"] {
+  --background: #541f1f;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #ff92c4;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: #883f3f;
+  --box-outline: 2px solid #ffd6ed;
+  --box-color: #ffd6ed;
+  --edit-bg-color: #e8ccbc;
+  --edit-color: #541f1f;
+  --edit-outline: 4px solid #f3e5dd;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid #ff92c4;
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 0;
+}
+
+[data-theme="ocean"] {
+  --background: #f7eade;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #174975;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: #e5f3fa;
+  --box-color: #2778a1;
+  --box-outline: 1px solid #174975;
+  --edit-bg-color: rgb(229 231 235);
+  --edit-color: #174975;
+  --edit-outline: 4px solid #2778a1;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid rgb(178, 178, 178);
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 2px solid #deeff7;
+}
+
+[data-theme="ocean-dark"] {
+  --background: #002268;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #00d7fc;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: #0041ec;
+  --box-color: #00ffff;
+  --box-outline: 1px solid #00d7fc;
+  --edit-bg-color: #00d7fc;
+  --edit-color: #002268;
+  --edit-outline: 4px solid #0041ec;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid #00d7fc;
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 2px solid #0041ec;
+}
+
+[data-theme="forest"] {
+  --background: #dae5c7;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #545926;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: #85a84d;
+  --box-color: #44281a;
+  --box-outline: 1px solid #627330;
+  --edit-bg-color: #dae5c7;
+  --edit-color: #002268;
+  --edit-outline: 4px solid #545926;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid #627330;
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 0;
+}
+
+[data-theme="forest-dark"] {
+  --background: #0e251c;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #338c4a;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: #094024;
+  --box-color: #a4bf98;
+  --box-outline: 2px solid #a4bf98;
+  --edit-bg-color: #a4bf98;
+  --edit-color: #002268;
+  --edit-outline: 4px solid #545926;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid #627330;
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 0;
+}
+[data-theme="black-and-white"] {
+  --background: #fff;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #000;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: #fff;
+  --box-color: #000;
+  --box-outline: 2px solid #000;
+  --edit-bg-color: #f3f3f3;
+  --edit-color: #000;
+  --edit-outline: 4px solid #000;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid #000;
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 0;
+}
+[data-theme="black-and-white-dark"] {
+  --background: #000;
+  --header-font: "Archivo Black", sans-serif;
+  --header-weight: 600;
+  --header-color: #fff;
+  --box-border-radius: 0.25rem;
+  --box-bg-color: #000;
+  --box-color: #fff;
+  --box-outline: 2px solid #fff;
+  --edit-bg-color: #393939;
+  --edit-color: #ffffff;
+  --edit-outline: 4px solid #ffffff;
+  --edit-radius: 0.25rem;
+  --standard-outline: 2px solid #ffffff;
+  --standard-radius: 0.25rem;
+  --add-btn-outline: 0;
+}
+
+.header-style {
+  /* font-family: var(--header-font); */
+  color: var(--header-color);
+  /* font-weight: var(--header-weight); */
+}
+
+.style-color {
+  color: var(--header-color);
+}
+
+.todo-item-style {
+  border-radius: var(--box-border-radius);
+  background: var(--box-bg-color);
+  color: var(--box-color);
+  outline: var(--box-outline);
+}
+.todo-edit-style {
+  border-radius: var(--edit-radius);
+  background: var(--edit-bg-color);
+  color: var(--edit-color);
+  outline: var(--edit-outline);
+}
+
+.sort-style {
+  background: var(--background);
+  color: var(--header-color);
+  outline: var(--standard-outline);
+  border-radius: var(--standard-radius);
+  /* outline: ; */
+}
+
+.add-btn-style {
+  background: var(--box-color);
+  color: var(--box-bg-color);
+  border-radius: var(--standard-radius);
+  outline: var(--add-btn-outline);
+}
+
+body {
+  background: var(--background);
+}

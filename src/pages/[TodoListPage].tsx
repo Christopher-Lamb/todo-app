@@ -6,6 +6,7 @@ import initalData from "../misc/initalData.ts";
 import { IoIosAdd } from "react-icons/io";
 import { generateUID, moveItemDND } from "../utils/";
 import { useIndexedDB } from "../context/IndexedDBContext.tsx";
+import { TiArrowBack } from "react-icons/ti";
 
 const TodoListPage: React.FC<PageProps> = () => {
   const todoId = location.pathname.replaceAll("/", "");
@@ -63,22 +64,25 @@ const TodoListPage: React.FC<PageProps> = () => {
         <main className="mt-one min-h-two flex justify-center">
           <div className="border border-4 pt-med border-red-600 p-small bg-red-50 shadow">
             <a href="/">
-              <span className="text-blue-600 underline">back</span>
+              <TiArrowBack size="2rem" className="cursor-pointer" />
+              {/* <span className="text-blue-600 underline">back</span> */}
             </a>
             <h1 className="text-one">Oh no...</h1>
             <p className="text-med">It appears that the "To Do" you're looking for does not exist.</p>
           </div>
         </main>
       ) : (
-        <main className="2xl:max-w-four mt-one mx-auto grid justify-center">
-          <PageHeaderControls title={todoContent} parentId={todoId} onSort={handleSort} />
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <TodoContainer todoContainerId="index">
-              {todoItems && todoItems.map((todoItemId, i) => <TodoItem key={todoItemId} parentId={todoId} todoItemId={todoItemId} index={i} onDelete={handleDelete} />)}
-            </TodoContainer>
-          </DragDropContext>
-          <div className="w-four mt-2xsmall outline outline-gray-600 bg-gray-200 flex items-center justify-center h-small cursor-pointer" onClick={handleAddItem}>
-            <IoIosAdd className="w-small h-small text-gray-600" />
+        <main className="mt-large lg:mt-one px-2xsmall lg:px-0 w-full">
+          <div className="mx-auto max-w-four">
+            <PageHeaderControls title={todoContent} parentId={todoId} onSort={handleSort} back />
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <TodoContainer todoContainerId="index">
+                {todoItems && todoItems.map((todoItemId, i) => <TodoItem key={todoItemId} parentId={todoId} todoItemId={todoItemId} index={i} onDelete={handleDelete} />)}
+              </TodoContainer>
+            </DragDropContext>
+            <div className="max-w-four mt-2xsmall add-btn-style flex items-center justify-center h-small cursor-pointer opacity-80 hover:opacity-100" onClick={handleAddItem}>
+              <IoIosAdd className="w-small h-small" />
+            </div>
           </div>
         </main>
       )}

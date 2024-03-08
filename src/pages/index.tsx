@@ -51,17 +51,19 @@ const IndexPage: React.FC<PageProps> = () => {
   };
 
   return (
-    <main className="2xl:max-w-four mt-one mx-auto grid justify-center">
-      <PageHeaderControls title="<h3>Todo's</h3>" parentId="mainIds" onSort={handleSort} />
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <TodoContainer todoContainerId="index">
-          {mainIds.map((todo, i) => (
-            <Todo key={todo} todoId={todo} index={i} onDelete={handleDelete} />
-          ))}
-        </TodoContainer>
-      </DragDropContext>
-      <div title="Add Todo" className="w-four mt-2xsmall outline outline-gray-300 rounded bg-gray-200 flex items-center justify-center h-small cursor-pointer opacity-60 hover:opacity-100" onClick={handleAdd}>
-        <IoIosAdd className="w-small h-small text-gray-500" />
+    <main className="mt-large lg:mt-one px-2xsmall lg:px-0 w-full">
+      <div className="mx-auto max-w-four">
+        <PageHeaderControls title="<h3>Todo's</h3>" parentId="mainIds" onSort={handleSort} />
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <TodoContainer todoContainerId="index">
+            {mainIds.map((todo, i) => (
+              <Todo key={todo} todoId={todo} index={i} onDelete={handleDelete} />
+            ))}
+          </TodoContainer>
+        </DragDropContext>
+        <div title="Add Todo" className="max-w-four mt-2xsmall add-btn-style flex items-center justify-center h-small cursor-pointer opacity-80 hover:opacity-100" onClick={handleAdd}>
+          <IoIosAdd className="w-small h-small" />
+        </div>
       </div>
     </main>
   );

@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
-import DarkModeToggle from "./Toggles/DarkModeToggle";
-import DeleteToggle from "./Toggles/DeleteToggle";
+import DarkModeToggle from "../Toggles/DarkModeToggle";
+import DeleteToggle from "../Toggles/DeleteToggle";
 import { FaRedo, FaUndo } from "react-icons/fa";
 import { useIndexedDB } from "../../context/IndexedDBContext";
 import { sortTodosAZ, sortTodosZA, sortTodosByLastCreated, sortTodosByLastUpdated, sortTodosByOldestCreated, sortTodosByOldestUpdated } from "./sortFunctions";
-import "./PageHeaderControls.css"
+import { IoMdSettings } from "react-icons/io";
+import { useSettings } from "../../context/SettingsContext";
+import { SettingsComp } from "..";
+import { TiArrowBack } from "react-icons/ti";
+import "./PageHeaderControls.css";
 
 interface PageHeaderControlsProps {
   title: string;
   parentId: string;
   onSort: (ids: string[]) => void;
+  back?: boolean;
 }
 
 interface TodoItem {
@@ -23,9 +28,10 @@ interface TodoItem {
 // TODO: Dark Mode and Delete Mode switches will be controlled in SettingsContext so we will import a useSettingContext at some point
 // accepts a list of object return a filtered list
 
-const PageHeaderControls: React.FC<PageHeaderControlsProps> = ({ title = "title", parentId, onSort }) => {
+const PageHeaderControls: React.FC<PageHeaderControlsProps> = ({ title = "title", parentId, onSort, back = false }) => {
   const [childTodos, setChildTodos] = useState<TodoItem[] | undefined>();
   const { getChildrenTodos, updates } = useIndexedDB();
+  const { isSettings, toggleSettings } = useSettings();
 
   const initChildren = async () => {
     if (getChildrenTodos) {
@@ -50,22 +56,30 @@ const PageHeaderControls: React.FC<PageHeaderControlsProps> = ({ title = "title"
 
   return (
     <div className="max-w-four">
+      {isSettings && <SettingsComp />}
       <div className="grid grid-cols-6">
         <div className="flex flex-col justify-between">
-          <a href="/">Back</a>
+          {back && (
+            <a href="/" title="back">
+              <TiArrowBack size="2rem" className="cursor-pointer style-color" />
+            </a>
+          )}
         </div>
         <div className="flex flex-col col-span-5 gap-2xsmall">
-          <div className="flex justify-end gap-2xsmall">
-            <DeleteToggle />
-            <DarkModeToggle />
+          <div className="flex items-center justify-end gap-2xsmall">
+            {/* <DeleteToggle />
+            <DarkModeToggle /> */}
+            <button onClick={toggleSettings}>
+              <IoMdSettings size={"1.5rem"}  className="style-color"/>
+            </button>
           </div>
           <div className="flex justify-end gap-2xsmall">
             <SortBox onSortSelect={handleSortSelect} />
-            <UndoRedo />
+            {/* <UndoRedo /> */}
           </div>
         </div>
       </div>
-      <div className="page-control-text-container archivo" dangerouslySetInnerHTML={{ __html: title }}></div>
+      <div className="page-control-text-container header-style mt-3xsmall" dangerouslySetInnerHTML={{ __html: title }}></div>
     </div>
   );
 };
@@ -109,8 +123,8 @@ const SortBox: React.FC<SortBoxProps> = ({ onSortSelect }) => {
     event.currentTarget.value = "";
   };
   return (
-    <div className="flex items-center justify-end h-small">
-      <select onClick={handelClick} onChange={handleChange} className="h-small px-2">
+    <div className="flex items-center justify-end h-small ">
+      <select onClick={handelClick} onChange={handleChange} className="h-small px-2 sort-style">
         <option value="">No Sort</option>
         <option value="last-created">New - Old</option>
         <option value="oldest-created">Old - New</option>

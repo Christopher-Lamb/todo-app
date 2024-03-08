@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { FaSun, FaMoon } from "react-icons/fa";
 import Switch from "react-switch";
+import { useSettings } from "../../context/SettingsContext";
 
-const DarkModeToggle: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+interface DarkModeToggleProps {
+  className?: string;
+}
+
+const DarkModeToggle: React.FC<DarkModeToggleProps> = ({ className }) => {
+  const { darkMode = false, onDarkMode = () => {} } = useSettings();
   return (
-    <div className="flex justify-end">
+    <div className={className} title="Dark Mode" style={{ color: "black" }}>
       <div className={"max-w-med rounded-2xl px-1 py-1 flex justify-between "}>
         <Switch
           className="border"
@@ -19,10 +24,13 @@ const DarkModeToggle: React.FC = () => {
               <FaMoon className="w-[18px] h-[18px] text-slate-100" />
             </div>
           }
-          onChange={() => setIsDarkMode((dm) => !dm)}
-          checked={isDarkMode}
+          // onChange={() => setIsDarkMode((dm) => !dm)}
+          // checked={isDarkMode}
+          onChange={(e) => onDarkMode(e)}
+          checked={darkMode}
           onColor="#3d25c2"
           offColor="#fff"
+          activeBoxShadow="0 0 2px 3px #FFCC33"
           offHandleColor="#374151"
           onHandleColor="#dde3eb"
           handleDiameter={22}

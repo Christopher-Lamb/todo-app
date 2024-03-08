@@ -56,6 +56,7 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
         if (secondaryElement === "span") {
           newNode.style.display = "block";
         }
+        if (i === 1) newNode.className = "first-el";
         newNode.textContent = node.textContent;
         // parentNode?.insertBefore(newNode, node);
         // parentNode?.removeChild(node);
@@ -63,6 +64,7 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
       } else if (node.textContent === "") {
         const newNode = document.createElement(secondaryElement);
         newNode.appendChild(document.createElement("br"));
+        if (i === 1) newNode.className = "first-el";
         // newNode.style.fontSize = "18px";
         if (secondaryElement === "span") {
           newNode.style.display = "block";

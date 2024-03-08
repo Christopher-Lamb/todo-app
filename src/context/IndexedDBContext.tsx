@@ -11,7 +11,15 @@ interface TodoItem {
   date_created: number;
   date_updated: number;
   todoIds?: string[];
+  currentTheme?: string;
+  deleteMode?: boolean;
+  darkMode?: boolean;
 }
+
+type KeyValuePair = {
+  key: string;
+  value: string | boolean;
+};
 
 interface IndexedDBContextType {
   addTodo: (parentId: string) => Promise<string>;
@@ -21,6 +29,7 @@ interface IndexedDBContextType {
   getChildrenTodos: (parentId: string) => Promise<TodoItem[]>;
   updateTodoPosition: (array: string[], parentId: string) => void;
   updates: number;
+  updateSettings: ({ key, value }: KeyValuePair) => void;
 }
 
 const defaultContextValue: Partial<IndexedDBContextType> = {
@@ -31,6 +40,7 @@ const defaultContextValue: Partial<IndexedDBContextType> = {
   getTodo: undefined,
   getChildrenTodos: undefined,
   updateTodoPosition: undefined,
+  updateSettings: undefined,
   updates: undefined,
 };
 
@@ -199,7 +209,27 @@ export const IndexedDBProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     await tx.done;
     return records; // This will be an array of found records
   };
-  return <IndexedDBContext.Provider value={{ addTodo, updateTodo, deleteTodo, getTodo, getChildrenTodos, updateTodoPosition, updates }}>{children}</IndexedDBContext.Provider>;
+
+  const updateSettings = async ({ key, value }: KeyValuePair) => {
+    //Takes an object and
+    const db = await openDB(dbName, version);
+    const tx = db.transaction(storeName, "readwrite");
+    const store = tx.objectStore(storeName);
+    // Retrieve the existing todo object
+    const settingsObj = await store.get("settings");
+
+    //Get Parent array
+    if (!settingsObj) {
+      throw new Error("Todo not found");
+    }
+
+    const updatedSettings = { ...settingsObj, [key]: value };
+
+    await store.put(updatedSettings);
+    await tx.done;
+  };
+
+  return <IndexedDBContext.Provider value={{ updateSettings, addTodo, updateTodo, deleteTodo, getTodo, getChildrenTodos, updateTodoPosition, updates }}>{children}</IndexedDBContext.Provider>;
 };
 
 export const useIndexedDB = () => useContext(IndexedDBContext);

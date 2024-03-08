@@ -1,0 +1,42 @@
+/* .todo-item-text h4 {
+  font-size: 1.6181rem;
+  line-height: 2.0704rem;
+} */
+.todo-item-text h4 {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+}
+
+.todo-item-text p {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.todo-item-text p.first-el::before {
+  content: "";
+  width: 14.59%;
+  max-width: 62px;
+  min-width: 40px;
+  height: 2.33px;
+  background-color: var(--box-color);
+  filter: opacity(0.4);
+  display: block;
+  /* border-top: 1px solid var(--); */
+}
+
+@media (min-width: 1024px) {
+  .todo-item-text h4 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .todo-item-text p.first-el::before {
+    content: "";
+    width: 9.02%;
+    height: 2.33px;
+    background-color: var(--box-color);
+    filter: opacity(0.4);
+    display: block;
+    /* border-top: 1px solid var(--); */
+  }
+}

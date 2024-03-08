@@ -4,6 +4,8 @@ import intialData from "../../misc/initalData";
 import { MdDragHandle, MdDelete } from "react-icons/md";
 import { useIndexedDB } from "../../context/IndexedDBContext";
 import { DynamicText } from "..";
+import { useSettings } from "../../context/SettingsContext";
+import "./TodoItem.css";
 
 interface TodoItemProps {
   todoItemId: string;
@@ -15,6 +17,7 @@ interface TodoItemProps {
 const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, parentId, index, onDelete }) => {
   const [content, setContent] = useState("");
   const { getTodo, updateTodo } = useIndexedDB();
+  const { deleteMode } = useSettings();
 
   useEffect(() => {
     const initTodoItem = async () => {
@@ -35,12 +38,14 @@ const TodoItem: React.FC<TodoItemProps> = ({ todoItemId, parentId, index, onDele
   return (
     <Draggable index={index} draggableId={todoItemId}>
       {(provided, snapshot) => (
-        <div ref={provided.innerRef} {...provided.draggableProps} className="min-h-small mt-2xsmall max-w-four bg-blue-500 text-white flex">
-          <DynamicText secondaryElement="p" className="w-full p-3xsmall" onChange={handleChange} isEditable={true} content={content}></DynamicText>
-          <button aria-label="Delete" onClick={() => onDelete(todoItemId)} className="bg-blue-900 flex items-center w-small justify-center">
-            <MdDelete className="w-xsmall h-xsmall" />
-          </button>
-          <div {...provided.dragHandleProps} className="bg-blue-900 flex items-center w-small justify-center">
+        <div ref={provided.innerRef} {...provided.draggableProps} className="min-h-small mt-2xsmall max-w-four todo-item-style text-white flex">
+          <DynamicText primaryElement="h4" secondaryElement="p" className="w-full p-3xsmall todo-item-text" onChange={handleChange} isEditable={true} content={content}></DynamicText>
+          {deleteMode && (
+            <button aria-label="Delete" onClick={() => onDelete(todoItemId)} className="flex items-center w-small justify-center">
+              <MdDelete className="w-xsmall h-xsmall" />
+            </button>
+          )}
+          <div {...provided.dragHandleProps} className="flex items-center w-small justify-center">
             <MdDragHandle className="w-xsmall h-xsmall" />
           </div>
         </div>
