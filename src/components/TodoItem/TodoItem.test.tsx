@@ -2,37 +2,43 @@ import React from "react";
 import { render, waitFor } from "@testing-library/react";
 import TodoItem from "./TodoItem";
 import userEvent from "@testing-library/user-event";
+import { act } from "react-dom/test-utils";
+
+// Assuming useIndexedDB is the only export from the file
+jest.mock("../../context/IndexedDBContext", () => ({
+  useIndexedDB: () => ({
+    getTodo: jest.fn().mockResolvedValue({ id: "todoItem-1", content: "<h4>Sample TodoItem</h4>" }),
+    // Mock other functions as necessary
+  }),
+}));
 
 describe("TodoItem Component", () => {
-  //Later will need to mock the indexedDB make an entry probably on default based off of inial data of some sort
-  test("renders inital text", () => {
-    const { getByLabelText } = render(<TodoItem todoItemId="todoItem-1" index={0} onDelete={jest.fn()} />);
-    const textContent = getByLabelText("Text content");
-    expect(textContent).toHaveTextContent("To do Item 1");
+  test("renders TodoItem", async () => {
+    const { getByRole } = render(<TodoItem index={0} todoItemId="todoItem-1" parentId="todo-1" onDelete={jest.fn()} />);
+    const todoContent = await waitFor(() => getByRole("heading", { level: 4, name: "Sample TodoItem" })); // Assuming "Sample Todo" is visible text content
+    expect(todoContent).toBeInTheDocument();
   });
-
-  test("delete button fires", async () => {
+  test("handles delete function", async () => {
     const deleteFunc = jest.fn();
-    const { getByRole } = render(<TodoItem todoItemId="todoItem-1" index={0} onDelete={deleteFunc} />);
-    const deleteBtn = getByRole("button", { name: "Delete" });
-    userEvent.click(deleteBtn);
-    expect(deleteBtn).toBeInTheDocument();
-    await waitFor(() => {
-      expect(deleteFunc).toHaveBeenCalled();
-    });
+    const { getByRole } = render(<TodoItem index={0} todoItemId="todoItem-1" parentId="todo-1" onDelete={deleteFunc} />);
+    const delBtn = getByRole("button", { name: "Delete" });
+    await userEvent.click(delBtn);
+    expect(deleteFunc).toHaveBeenCalled();
   });
 
-  test("dynamically handle Enter keydown in contentEditable", async () => {
-    const { getByLabelText } = render(<TodoItem todoItemId="todoItem-1" index={0} onDelete={jest.fn()} />);
-    const editableDiv = getByLabelText("Text content");
-    expect(editableDiv).toHaveTextContent("To do Item 1");
-    
-    editableDiv.focus()
+  test("handles content change", async () => {
+    const { getByLabelText, getByRole, getByText } = render(<TodoItem index={0} todoItemId="todoItem-1" parentId="todo-1" onDelete={jest.fn()} />);
+    const dynamicText = await waitFor(() => getByLabelText("Text Area"));
+    expect(dynamicText).toBeInTheDocument();
 
-    userEvent.type(editableDiv, "{enter}");
-    
-    await waitFor(() => {
-      expect(editableDiv).toContainHTML("<p><br></p>");
-    });
+    // Toggle Edit button so we can contentEditible
+    // Click the text area to check focus
+    await userEvent.click(dynamicText);
+    expect(dynamicText).toHaveFocus();
+
+    await waitFor(() => userEvent.keyboard("{Enter}New Paragraph{Enter}"));
+    const spanElement = getByText("New Paragraph");
+    expect(spanElement.tagName).toBe("P");
+    expect(spanElement).toHaveClass("first-el");
   });
 });

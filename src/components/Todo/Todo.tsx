@@ -53,33 +53,6 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
     updateTodo({ id: todoId, content: html }, "mainIds");
   };
 
-  // const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-  //   if (event.key === "Enter") {
-  //     event.preventDefault();
-  //   }
-  // };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    console.log("Hello");
-    if (event.key === "Enter") {
-      event.preventDefault();
-      const selection = window.getSelection();
-      if (selection) {
-        const range = selection.getRangeAt(0);
-        const newDiv = document.createElement("span");
-        newDiv.style.fontSize = "1.125rem";
-        newDiv.style.fontWeight = "100";
-        newDiv.style.display = "block";
-        // newDiv.appendChild(document.createElement("br"));
-        range.insertNode(newDiv);
-        range.setStartAfter(newDiv);
-        range.setEndAfter(newDiv);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
-  };
-
   return (
     <Draggable index={index} draggableId={todoId}>
       {(provided, snapshot) => (

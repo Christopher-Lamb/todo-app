@@ -40,17 +40,23 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
     }
   };
 
+  // Dont let elements nest on enter, take care of empty new lines seperate first element and the rest
   const formatElements = () => {
     if (!contentEditableRef.current) return;
     const parentNode = contentEditableRef.current;
-    const childNodes = contentEditableRef.current.childNodes.forEach((node, i) => {
+    
+    contentEditableRef.current.childNodes.forEach((node, i) => {
+      // Makes first element different than the rest
       if (i === 0) {
         const newNode = document.createElement(primaryElement);
         // newNode.style.fontSize = "25px";
         newNode.textContent = node.textContent;
         parentNode?.insertBefore(newNode, node);
         parentNode?.removeChild(node);
-      } else if (node.textContent !== "") {
+      }
+      // If an element isnt empty then we are creating an element of "secondaryElement" add the text of the node
+      // And replace the muttled element with new one
+      else if (node.textContent !== "") {
         const newNode = document.createElement(secondaryElement);
         // newNode.style.fontSize = "18px";
         if (secondaryElement === "span") {
@@ -61,7 +67,9 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
         // parentNode?.insertBefore(newNode, node);
         // parentNode?.removeChild(node);
         parentNode?.replaceChild(newNode, node);
-      } else if (node.textContent === "") {
+      }
+      // If element is empty add the empty add secondary El with <br/>
+      else if (node.textContent === "") {
         const newNode = document.createElement(secondaryElement);
         newNode.appendChild(document.createElement("br"));
         if (i === 1) newNode.className = "first-el";
@@ -103,7 +111,7 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
     });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
       formatElements();
     }
@@ -112,7 +120,17 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
     }
   };
 
-  return <div className={className} ref={contentEditableRef} contentEditable={isEditable} onKeyUp={handleKeyDown} onInput={handleChange} dangerouslySetInnerHTML={{ __html: content }}></div>;
+  return (
+    <div
+      aria-label="Text Area"
+      className={className}
+      ref={contentEditableRef}
+      contentEditable={isEditable}
+      onKeyUp={handleKeyUp}
+      onInput={handleChange}
+      dangerouslySetInnerHTML={{ __html: content }}
+    ></div>
+  );
 };
 
 export default DynamicText;
