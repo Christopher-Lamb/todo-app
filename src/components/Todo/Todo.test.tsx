@@ -1,8 +1,7 @@
 import React from "react";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import Todo from "./Todo";
 import userEvent from "@testing-library/user-event";
-import { act } from "react-dom/test-utils";
 
 // Assuming useIndexedDB is the only export from the file
 jest.mock("../../context/IndexedDBContext", () => ({

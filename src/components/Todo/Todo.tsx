@@ -74,7 +74,7 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
           <button aria-label="Edit Toggle" className="flex items-center justify-center w-small cursor-pointer" onClick={handleEdit}>
             <MdEdit className="w-xsmall h-xsmall" />
           </button>
-          <div {...provided.dragHandleProps} className="w-small flex items-center justify-center">
+          <div aria-label="Drag Handle" {...provided.dragHandleProps} className="w-small flex items-center justify-center">
             <MdDragHandle className="w-xsmall h-xsmall" />
           </div>
         </a>

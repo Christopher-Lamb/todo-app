@@ -16,7 +16,7 @@ const IndexPage: React.FC<PageProps> = () => {
       if (!getTodo) return;
       const mainIds = await getTodo("mainIds");
       if (mainIds) {
-        console.log("BANG", mainIds);
+        // console.log("BANG", mainIds);
         setMainIds(mainIds.todoIds ?? []);
       }
     };
@@ -53,7 +53,7 @@ const IndexPage: React.FC<PageProps> = () => {
   return (
     <main className="mt-large lg:mt-one px-2xsmall lg:px-0 w-full">
       <div className="mx-auto max-w-four">
-        <PageHeaderControls title="<h3>Todo's</h3>" parentId="mainIds" onSort={handleSort} />
+        <PageHeaderControls title="<h3>To do's</h3>" parentId="mainIds" onSort={handleSort} />
         <DragDropContext onDragEnd={handleDragEnd}>
           <TodoContainer todoContainerId="index">
             {mainIds.map((todo, i) => (
@@ -61,9 +61,9 @@ const IndexPage: React.FC<PageProps> = () => {
             ))}
           </TodoContainer>
         </DragDropContext>
-        <div title="Add Todo" className="max-w-four mt-2xsmall add-btn-style flex items-center justify-center h-small cursor-pointer opacity-80 hover:opacity-100" onClick={handleAdd}>
+        <button title="Add Todo" className="max-w-four mt-2xsmall add-btn-style flex items-center justify-center w-full h-small cursor-pointer opacity-80 hover:opacity-100" onClick={handleAdd}>
           <IoIosAdd className="w-small h-small" />
-        </div>
+        </button>
       </div>
     </main>
   );
