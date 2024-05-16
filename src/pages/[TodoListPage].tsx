@@ -9,7 +9,7 @@ import { useIndexedDB } from "../context/IndexedDBContext.tsx";
 import { TiArrowBack } from "react-icons/ti";
 
 const TodoListPage: React.FC<PageProps> = () => {
-  const todoId = location.pathname.replaceAll("/", "");
+  const todoId = typeof location !== "undefined" ? location.pathname.replaceAll("/", "") : "";
   // const todoContent = initalData.todos[todoId] ? initalData.todos[todoId].content : "Error";
   const [todoItems, setTodoItems] = useState<string[]>([]);
   const [todoContent, setTodoContent] = useState("");
