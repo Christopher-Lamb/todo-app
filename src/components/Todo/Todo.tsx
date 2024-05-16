@@ -4,6 +4,7 @@ import intialData from "../../misc/initalData";
 import { MdDragHandle, MdEdit, MdDelete } from "react-icons/md";
 import { useIndexedDB } from "../../context/IndexedDBContext";
 import { DynamicText } from "..";
+import { navigateTo } from "../../utils";
 import { useSettings } from "../../context/SettingsContext";
 import "./Todo.css";
 
@@ -45,7 +46,9 @@ const Todo: React.FC<TodoProps> = ({ index, todoId, onDelete }) => {
 
   const handleClick = () => {
     if (!canEdit) {
-      location.href = "/" + todoId;
+      navigateTo(todoId);
+      // window.location.replace("/todo-app/" + todoId);
+      // location.href = "/" + todoId;
     }
   };
   const handleChange = (html: string) => {

@@ -4,12 +4,18 @@ import { Todo, PageHeaderControls, TodoContainer, TodoItem } from "../components
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import initalData from "../misc/initalData.ts";
 import { IoIosAdd } from "react-icons/io";
-import { generateUID, moveItemDND } from "../utils/";
+import { moveItemDND } from "../utils/";
 import { useIndexedDB } from "../context/IndexedDBContext.tsx";
 import { TiArrowBack } from "react-icons/ti";
 
 const TodoListPage: React.FC<PageProps> = () => {
-  const todoId = typeof location !== "undefined" ? location.pathname.replaceAll("/", "") : "";
+  const todoId =
+    typeof location !== "undefined"
+      ? location.pathname
+          .split("/")
+          .filter((i) => i)
+          .pop() || ""
+      : "";
   // const todoContent = initalData.todos[todoId] ? initalData.todos[todoId].content : "Error";
   const [todoItems, setTodoItems] = useState<string[]>([]);
   const [todoContent, setTodoContent] = useState("");
