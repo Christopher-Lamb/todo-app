@@ -1,8 +1,8 @@
 import type { GatsbyConfig } from "gatsby";
 
 const config: GatsbyConfig = {
+  pathPrefix: `/todo-app`,
   siteMetadata: {
-    pathPrefix: `/todo-app`,
     title: `My Gatsby Site`,
     siteUrl: `https://www.yourdomain.tld`,
   },

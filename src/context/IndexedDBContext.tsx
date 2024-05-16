@@ -82,7 +82,9 @@ export const IndexedDBProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   useEffect(() => {
-    initDB();
+    if (typeof window !== "undefined") {
+      initDB();
+    }
   }, []);
 
   // Get data from the database
