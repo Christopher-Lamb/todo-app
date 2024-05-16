@@ -6,6 +6,7 @@ import { IoIosAdd } from "react-icons/io";
 import initalData from "../misc/initalData.ts";
 import { moveItemDND, generateUID } from "../utils";
 import { useIndexedDB } from "../context/IndexedDBContext.tsx";
+import { Helmet } from "react-helmet";
 
 const IndexPage: React.FC<PageProps> = () => {
   const [mainIds, setMainIds] = useState<string[]>([]);
@@ -51,24 +52,29 @@ const IndexPage: React.FC<PageProps> = () => {
   };
 
   return (
-    <main className="mt-large lg:mt-one px-2xsmall lg:px-0 w-full">
-      <div className="mx-auto max-w-four">
-        <PageHeaderControls title="<h3>To do's</h3>" parentId="mainIds" onSort={handleSort} />
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <TodoContainer todoContainerId="index">
-            {mainIds.map((todo, i) => (
-              <Todo key={todo} todoId={todo} index={i} onDelete={handleDelete} />
-            ))}
-          </TodoContainer>
-        </DragDropContext>
-        <button title="Add Todo" className="max-w-four mt-2xsmall add-btn-style flex items-center justify-center w-full h-small cursor-pointer opacity-80 hover:opacity-100" onClick={handleAdd}>
-          <IoIosAdd className="w-small h-small" />
-        </button>
-      </div>
-    </main>
+    <>
+    <Helmet>
+      <title>To Do App</title>
+    </Helmet>
+      <main className="mt-large lg:mt-one px-2xsmall lg:px-0 w-full">
+        <div className="mx-auto max-w-four">
+          <PageHeaderControls title="<h3>To do's</h3>" parentId="mainIds" onSort={handleSort} />
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <TodoContainer todoContainerId="index">
+              {mainIds.map((todo, i) => (
+                <Todo key={todo} todoId={todo} index={i} onDelete={handleDelete} />
+              ))}
+            </TodoContainer>
+          </DragDropContext>
+          <button title="Add Todo" className="max-w-four mt-2xsmall add-btn-style flex items-center justify-center w-full h-small cursor-pointer opacity-80 hover:opacity-100" onClick={handleAdd}>
+            <IoIosAdd className="w-small h-small" />
+          </button>
+        </div>
+      </main>
+    </>
   );
 };
 
 export default IndexPage;
 
-export const Head: HeadFC = () => <title>Home</title>;
+export const Head: HeadFC = () => <title>To Do App</title>;

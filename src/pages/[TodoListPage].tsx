@@ -8,6 +8,15 @@ import { moveItemDND } from "../utils/";
 import { useIndexedDB } from "../context/IndexedDBContext.tsx";
 import { TiArrowBack } from "react-icons/ti";
 import { Link } from "gatsby";
+import { Helmet } from "react-helmet";
+
+const getH3 = (htmlStr: string) => {
+  const content = htmlStr.match(/\<h3\>(.*?)\<\/h3\>/g) || [""];
+  const text = content[0].replaceAll(/\<.*?h3.*?\>/g, "");
+  if (text) {
+    return "| " + text;
+  }
+};
 
 const TodoListPage: React.FC<PageProps> = () => {
   const todoId =
@@ -67,6 +76,9 @@ const TodoListPage: React.FC<PageProps> = () => {
 
   return (
     <>
+      <Helmet>
+        <title>To Do {getH3(todoContent) || ""}</title>
+      </Helmet>
       {fallback ? (
         <main className="mt-one min-h-two flex justify-center">
           <div className="border border-4 pt-med border-red-600 p-small bg-red-50 shadow">
@@ -99,4 +111,4 @@ const TodoListPage: React.FC<PageProps> = () => {
 
 export default TodoListPage;
 
-export const Head: HeadFC = () => <title>Todo List</title>;
+export const Head: HeadFC = () => <title>To do List</title>;
