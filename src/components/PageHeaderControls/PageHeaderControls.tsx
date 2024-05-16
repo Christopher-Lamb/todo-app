@@ -7,6 +7,7 @@ import { sortTodosAZ, sortTodosZA, sortTodosByLastCreated, sortTodosByLastUpdate
 import { IoMdSettings } from "react-icons/io";
 import { useSettings } from "../../context/SettingsContext";
 import { SettingsComp } from "..";
+import { Link } from "gatsby";
 import { TiArrowBack } from "react-icons/ti";
 import "./PageHeaderControls.css";
 
@@ -60,9 +61,9 @@ const PageHeaderControls: React.FC<PageHeaderControlsProps> = ({ title = "title"
       <div className="grid grid-cols-6">
         <div className="flex flex-col justify-between">
           {back && (
-            <a href="/" title="back">
+            <Link to="/" title="back">
               <TiArrowBack size="2rem" className="cursor-pointer style-color" />
-            </a>
+            </Link>
           )}
         </div>
         <div className="flex flex-col col-span-5 gap-2xsmall">
@@ -70,7 +71,7 @@ const PageHeaderControls: React.FC<PageHeaderControlsProps> = ({ title = "title"
             {/* <DeleteToggle />
             <DarkModeToggle /> */}
             <button onClick={toggleSettings}>
-              <IoMdSettings size={"1.5rem"}  className="style-color"/>
+              <IoMdSettings size={"1.5rem"} className="style-color" />
             </button>
           </div>
           <div className="flex justify-end gap-2xsmall">
