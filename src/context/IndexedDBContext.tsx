@@ -61,7 +61,7 @@ export const IndexedDBProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const initDB = async () => {
     const db = await openDB(dbName, version, {
       upgrade(db) {
-        console.log("Upgrade function is running");
+        // console.log("Upgrade function is running");
         if (!db.objectStoreNames.contains(storeName)) {
           const store = db.createObjectStore(storeName, { keyPath: "id" });
           // Note: Do not attempt to add data here
